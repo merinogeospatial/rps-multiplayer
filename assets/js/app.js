@@ -10,7 +10,7 @@
   firebase.initializeApp(config);
 
 const database = firebase.database();
-const players = database.ref().child("players");
+const players = database.ref();
 
 // let player1 = '';
 // let player2 = '';
@@ -23,15 +23,26 @@ let thisPlayer;
     $('#info').on('click','button',function(){
         playerName = $('#player-name').val();
         thisPlayer = playerName;
+
+        $('#info').text("Hello, " + thisPlayer + "!");
+
+            // put if statement here
             // update player names based on conditional?
-            players.update({
-                player1: {
+        // var ref = players.child('players/player1');
+        var playersSnap = players.child('players');
+        playersSnap.once('value', function(snap) {
+            console.log(snap.val());
+        })    
+
+        players.update({
+            player1: {
                     playerName: playerName,
                     choice: '',
                     wins: 0,
-                    losses: 0 
-                },
-                player2: {
+                    losses: 0
+
+            },
+            player2: {
                     playerName: '',
                     choice: '',
                     wins: 0,
