@@ -8,3 +8,11 @@ ul {
     height: 200px;
     overflow: auto;
 }
+
+#info {
+    height: 50px;
+}
+
+#stage {
+    height: 150px;
+}
