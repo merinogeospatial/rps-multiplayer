@@ -32,24 +32,42 @@ let thisPlayer;
         var playersSnap = players.child('players');
         playersSnap.once('value', function(snap) {
             console.log(snap.val());
+            console.log(snap.val().player1.active);
+            if (snap.val().player1.active && snap.val().player2.active) {
+                alert("There are already two players fighting it out!");
+                $('#info').text("Hello, " + thisPlayer + "! Unable to join game, there are already 2 players.")
+            }
+            else if (!snap.val().player1.active) {
+                playersSnap.update({
+                    player1: {
+                        playerName: playerName,
+                        active: true,
+                        wins: 0,
+                        losses: 0
+                    }
+                }) 
+            }
+            else {
+                playersSnap.update({
+                    player2: {
+                        playerName: playerName,
+                        active: true,
+                        wins: 0,
+                        losses: 0
+                    }
+                }) 
+            }
         })    
-
-        players.update({
-            player1: {
-                    playerName: playerName,
-                    choice: '',
-                    wins: 0,
-                    losses: 0
-
-            },
-            player2: {
-                    playerName: '',
-                    choice: '',
-                    wins: 0,
-                    losses: 0 
-                }
-
-            }) 
+        
+            // playersSnap.update({
+            //     player1: {
+            //             playerName: playerName,
+            //             choice: '',
+            //             wins: 0,
+            //             losses: 0,
+            //             active: true
+            //     }
+            //     }) 
             
  
     })
