@@ -11,28 +11,27 @@
 
 const database = firebase.database();
 const players = database.ref();
-
-// let player1 = '';
-// let player2 = '';
-// let choice1;
-// let choice2;
 let thisPlayer;
-
+let currentPlayer;
+var playersSnap = players.child('players');
+var firebase1 = database.ref('players/player1/active');
+var firebase2 = database.ref('players/player2/active');
 
 
     $('#info').on('click','button',function(){
         playerName = $('#player-name').val();
         thisPlayer = playerName;
+        
 
         $('#info').text("Hello, " + thisPlayer + "!");
 
             // put if statement here
             // update player names based on conditional?
         // var ref = players.child('players/player1');
-        var playersSnap = players.child('players');
         playersSnap.once('value', function(snap) {
             console.log(snap.val());
             console.log(snap.val().player1.active);
+
             if (snap.val().player1.active && snap.val().player2.active) {
                 alert("There are already two players fighting it out!");
                 $('#info').text("Hello, " + thisPlayer + "! Unable to join game, there are already 2 players.")
@@ -46,6 +45,7 @@ let thisPlayer;
                         losses: 0
                     }
                 }) 
+                currentPlayer = 1;
             }
             else {
                 playersSnap.update({
@@ -55,23 +55,26 @@ let thisPlayer;
                         wins: 0,
                         losses: 0
                     }
-                }) 
+                })
+                currentPlayer = 2; 
+            }
+            if (currentPlayer === 1) {
+                firebase1.onDisconnect().set(false);
+            }
+            else {
+                firebase2.onDisconnect().set(false);
             }
         })    
-        
-            // playersSnap.update({
-            //     player1: {
-            //             playerName: playerName,
-            //             choice: '',
-            //             wins: 0,
-            //             losses: 0,
-            //             active: true
-            //     }
-            //     }) 
-            
- 
+    
+    
+
     })
 
+
+
+
+
+// playersSnap.onDisconnect().
 
 // First we want to ask user for name
   // In #info, add input asking for name, upon typing name and submitting - fill player1, if player 1 not empty, fill player 2
