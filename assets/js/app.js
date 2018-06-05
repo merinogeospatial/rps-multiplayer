@@ -11,23 +11,24 @@
 
 const database = firebase.database();
 const players = database.ref();
-let thisPlayer;
-let currentPlayer;
-var playersSnap = players.child('players');
-var firebase1 = database.ref('players/player1/active');
-var firebase2 = database.ref('players/player2/active');
+let thisPlayer = 'anonymous';
+let currentPlayer = 'anonymous';
+let playerName = 'anonymous';
+const playersSnap = players.child('players');
+const chatSnap = players.child('chat');
+const firebase1 = database.ref('players/player1/active');
+const firebase2 = database.ref('players/player2/active');
+const resetName1 = database.ref('players/player1/playerName');
+const resetName2 = database.ref('players/player2/playerName');
+
 
 
     $('#info').on('click','button',function(){
         playerName = $('#player-name').val();
         thisPlayer = playerName;
-        
-
+    
         $('#info').text("Hello, " + thisPlayer + "!");
 
-            // put if statement here
-            // update player names based on conditional?
-        // var ref = players.child('players/player1');
         playersSnap.once('value', function(snap) {
             console.log(snap.val());
             console.log(snap.val().player1.active);
@@ -46,6 +47,8 @@ var firebase2 = database.ref('players/player2/active');
                     }
                 }) 
                 currentPlayer = 1;
+                li = $('<li>').text(playerName + " has joined as Player 1!");
+                $('#chat-container').append(li);
             }
             else {
                 playersSnap.update({
@@ -57,48 +60,92 @@ var firebase2 = database.ref('players/player2/active');
                     }
                 })
                 currentPlayer = 2; 
+                li = $('<li>').text(playerName + " has joined as Player 2!");
+                $('#chat-container').append(li);
             }
+            // Disconnect player from firebase when closing so others may join
             if (currentPlayer === 1) {
                 firebase1.onDisconnect().set(false);
+                resetName1.onDisconnect().set(''); 
+
             }
             else {
                 firebase2.onDisconnect().set(false);
+                resetName2.onDisconnect().set(''); 
             }
-        })    
-    
-    
 
+            //chat logic temp
+            // database.ref('chat').on('value', function(snap) {
+            //     console.log(snap.val());
+            //     database.ref().child('chat').update({
+            //         message: 'hi',
+            //         name: playerName
+            //     })
+            //  })
+        })    
     })
 
-
-
-
-
-// playersSnap.onDisconnect().
-
-// First we want to ask user for name
-  // In #info, add input asking for name, upon typing name and submitting - fill player1, if player 1 not empty, fill player 2
-  // This will create objects for player 1 and 2
-
-  // Display in 
-
-
-
-
-
-// CHAT HERE //
+// CHAT LOGIC HERE //
 
 $('#chat').on('click','button',function(){
-    console.log('this works');
+    console.log('chat button clicked');
     
     message = $('#chat-message').val();
     newli = $('<li>');
     newli.text(
         moment().format('LTS') + " | " + thisPlayer + " says: " + message 
     )
-    $('#chat-container').append(newli);
+    database.ref('chat').once('value', function(snap) {
+        console.log(snap.val());
+        database.ref().child('chat').push({
+            message: message,
+            name: playerName
+        })
+    })
+
+    // $('#chat-container').append(newli);
     $('#chat-message').val('');
     console.log(message);
 })
+
+database.ref().on('child_changed', function(snap) {
+    newLI = $('<li>');
+    // console.log(snap.val);
+    snap.forEach(function(child){
+        // console.log(child.val().message);
+        let message = child.val().message;
+        let name = child.val().name;
+        if (name === undefined) {
+            $('#chat-container').append("Two players must be signed in to chat.");
+            return;
+        }
+        else {
+            newLI.text(
+                moment().format('LTS') + " | " + name + " >>> "+ message
+            )
+            $('#chat-container').append(newLI);
+        }
+    })
+})
+
+players.on('child_changed', function(snap) {
+    console.log(snap.val());
+    if (snap.val().player1.playerName === undefined || snap.val().player2.playerName === undefined) {
+        return;
+    }
+    else if (!snap.val().player1.active) {
+        console.log(snap.val().player1.active);
+        li = $('<li>').text(snap.val().player1.playerName + " (user has disconnected)");
+        $('#chat-container').append(li);
+    }
+    else if (!snap.val().player2.active) {
+        li = $('<li>').text(snap.val().player2.playerName + " (user has disconnected)");
+        $('#chat-container').append(li);
+    }
+    else {
+        return;
+    }
+})
+
 
 
