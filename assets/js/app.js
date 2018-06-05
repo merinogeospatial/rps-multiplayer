@@ -20,6 +20,14 @@ const firebase1 = database.ref('players/player1/active');
 const firebase2 = database.ref('players/player2/active');
 const resetName1 = database.ref('players/player1/playerName');
 const resetName2 = database.ref('players/player2/playerName');
+const choice1 = database.ref('players/player1');
+const choice2 = database.ref('players/player2');
+let winner;
+let resetChoice = false;
+let wins1 = 0;
+let losses1 = 0;
+let wins2 = 0;
+let losses2 = 0;
 
 
     $('#info').on('click','button',function(){
@@ -126,6 +134,10 @@ chatSnap.on('child_added', function(snap) {
 })
 
 playersSnap.on('child_changed', function(snap) {
+    if (resetChoice) {
+        $('.btn-primary').removeAttr('disabled');
+        resetChoice = false;
+    }
     console.log(snap.val());
     if (snap.val().playerName === undefined)  {
         return;
@@ -156,7 +168,7 @@ database.ref().on('value', function(snap) {
     }
     chatSnap.onDisconnect().set({
         chat:{
-            message: "Talk trash but keep it clean!",
+            message: "Talk trash but keep it clean... or play mind games with your opponent.",
             name: "GameBot"
         }
         }); 
@@ -179,11 +191,6 @@ $('#info').on('click','button',function(){
     })
 
     database.ref().once('value', function(snap) {
-        name1 = snap.val().players.player1.playerName;
-        choice1 = snap.val().players.player1.choice;
-        wins1 = snap.val().players.player1.wins;
-        losses1 = snap.val().players.player1.losses;
-        console.log(name1 + choice1 + wins1+losses1);
 
         if (snap.val().players.player1.active && snap.val().players.player2.active) {
             h1 = $('<h1>').text("Player 2: " + playerName);
@@ -219,5 +226,77 @@ $('#info').on('click','button',function(){
 $('#player-1').on('click', 'button', function(){
     choice = $(this).attr('choice');
     //send to firebase
+    database.ref('players').once('value', function(snap){
+        choice1.update({
+            choice: choice
+        });
+    })
     $('.btn-primary').attr('disabled','true');
 })
+
+$('#player-2').on('click', 'button', function(){
+    choice = $(this).attr('choice');
+    //send to firebase
+    database.ref('players').once('value', function(snap){
+        choice2.update({
+            choice: choice
+        });
+    })
+    $('.btn-primary').attr('disabled','true');
+})
+
+playersSnap.on('value', function(snap) {
+    let playerChoice1 = snap.val().player1.choice;
+    let playerChoice2 = snap.val().player2.choice;
+
+
+    if (playerChoice2 === '' || playerChoice2 === ''){
+        return;
+    }
+    else if ( (playerChoice1 === 'Rock' && playerChoice2=== 'Paper') || (playerChoice1 === 'Paper' && playerChoice2=== 'Scissors') || 
+              (playerChoice1 === 'Scissors' && playerChoice2=== 'Rock') ) {
+        console.log("Player 2 wins");
+        // change local variables
+        wins2++;
+        losses1++;
+        // clear choices and reset buttons
+        $('.btn-primary').removeAttr('disabled');
+        // winner = snap.val().player2.playerName;
+        // clear choice for player 2
+        database.ref('players').once('value', function(snap){
+            choice2.update({
+                choice: ""
+            });
+        })
+        // clear choice for player 1
+        database.ref('players').once('value', function(snap){
+            choice1.update({
+                choice: ""
+            });
+        })
+        // update wins for player 2
+        database.ref('players').once('value', function(snap){
+            choice2.update({
+                wins: wins2
+            });
+        })
+        // update losses for player 1
+        database.ref('players').once('value', function(snap){
+            choice1.update({
+                losses: losses1
+            });
+        })
+
+        resetChoice = true;
+        setTimeout( function(){
+            li = $('<li>').text("Player 2 wins!");
+            $('#chat-container').append(li);
+            $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+        },500)
+    }
+    else {
+        console.log(playerChoice1);
+
+    }
+})
+
