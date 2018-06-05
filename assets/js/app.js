@@ -22,8 +22,6 @@ const resetName1 = database.ref('players/player1/playerName');
 const resetName2 = database.ref('players/player2/playerName');
 
 
-
-
     $('#info').on('click','button',function(){
         playerName = $('#player-name').val();
         thisPlayer = playerName;
@@ -52,16 +50,6 @@ const resetName2 = database.ref('players/player2/playerName');
                 li = $('<li>').text(playerName + " has joined as Player 1!");
                 $('#chat-container').append(li);
                 $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
-                // h1 = $('<h1>').text("Player 1: " + playerName);
-                // choices = ['Rock','Paper','Scissors'];
-
-                // for (i =0; i < choices.length; i++) {
-                //     button = $('<button>');
-                //     button.text(choices[i]);
-                //     $('#player-1').append(button);
-                // }
-
-                // $('#player-1').prepend(h1);
 
             }
             else {
@@ -78,16 +66,6 @@ const resetName2 = database.ref('players/player2/playerName');
                 li = $('<li>').text(playerName + " has joined as Player 2!");
                 $('#chat-container').append(li);
                 $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
-                // h1 = $('<h1>').text("Player 2: " + playerName);
-                // choices = ['Rock','Paper','Scissors'];
-
-                // for (i =0; i < choices.length; i++) {
-                //     button = $('<button>');
-                //     button.text(choices[i]);
-                //     $('#player-2').append(button);
-                // }
-                
-                // $('#player-2').prepend(h1);
             }
             // Disconnect player from firebase when closing so others may join
             if (currentPlayer === 1) {
@@ -176,6 +154,12 @@ database.ref().on('value', function(snap) {
         h1 = $("<h1>").text("Player 2 : " + snap.val().players.player2.playerName);
         $('#player-2').html(h1);
     }
+    chatSnap.onDisconnect().set({
+        chat:{
+            message: "Talk trash but keep it clean!",
+            name: "GameBot"
+        }
+        }); 
 })
 
 $('#info').on('click','button',function(){
@@ -184,9 +168,6 @@ $('#info').on('click','button',function(){
         if (!snap.val().players.player1.active && !snap.val().players.player2.active){
             return;
         }
-        // else if ($('#player-1').contains('Player')) {
-        //     return;
-        // }
         else if (snap.val().players.player1.active && !snap.val().players.player2.active) {
             h1 = $("<h1>").text("Player 2 : " + snap.val().players.player2.playerName);
             $('#player-2').prepend(h1);
@@ -210,7 +191,9 @@ $('#info').on('click','button',function(){
     
             for (i =0; i < choices.length; i++) {
                 button = $('<button>');
-                button.text(choices[i]);
+                button.text(choices[i])
+                    .attr('class','btn btn-primary m-1 choices')
+                    .attr('choice', choices[i]);
                 $('#player-2').append(button);
             }
             $('#player-2').prepend(h1);
@@ -221,7 +204,9 @@ $('#info').on('click','button',function(){
 
             for (i =0; i < choices.length; i++) {
                 button = $('<button>');
-                button.text(choices[i]);
+                button.text(choices[i])
+                .attr('class','btn btn-primary m-1')
+                .attr('choice', choices[i]);
                 $('#player-1').append(button);
             }
                 
@@ -229,4 +214,10 @@ $('#info').on('click','button',function(){
         }
     })
 
+})
+
+$('#player-1').on('click', 'button', function(){
+    choice = $(this).attr('choice');
+    //send to firebase
+    $('.btn-primary').attr('disabled','true');
 })
