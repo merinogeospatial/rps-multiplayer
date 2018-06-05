@@ -28,7 +28,7 @@ const resetName2 = database.ref('players/player2/playerName');
         playerName = $('#player-name').val();
         thisPlayer = playerName;
     
-        $('#info').text("Hello, " + thisPlayer + "!");
+        $('#info').text("Go get em, " + thisPlayer + "!");
 
         playersSnap.once('value', function(snap) {
             console.log(snap.val());
@@ -44,12 +44,25 @@ const resetName2 = database.ref('players/player2/playerName');
                         playerName: playerName,
                         active: true,
                         wins: 0,
-                        losses: 0
+                        losses: 0,
+                        choice:''
                     }
                 }) 
                 currentPlayer = 1;
                 li = $('<li>').text(playerName + " has joined as Player 1!");
                 $('#chat-container').append(li);
+                $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+                // h1 = $('<h1>').text("Player 1: " + playerName);
+                // choices = ['Rock','Paper','Scissors'];
+
+                // for (i =0; i < choices.length; i++) {
+                //     button = $('<button>');
+                //     button.text(choices[i]);
+                //     $('#player-1').append(button);
+                // }
+
+                // $('#player-1').prepend(h1);
+
             }
             else {
                 playersSnap.update({
@@ -57,12 +70,24 @@ const resetName2 = database.ref('players/player2/playerName');
                         playerName: playerName,
                         active: true,
                         wins: 0,
-                        losses: 0
+                        losses: 0,
+                        choice: ''
                     }
                 })
                 currentPlayer = 2; 
                 li = $('<li>').text(playerName + " has joined as Player 2!");
                 $('#chat-container').append(li);
+                $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+                // h1 = $('<h1>').text("Player 2: " + playerName);
+                // choices = ['Rock','Paper','Scissors'];
+
+                // for (i =0; i < choices.length; i++) {
+                //     button = $('<button>');
+                //     button.text(choices[i]);
+                //     $('#player-2').append(button);
+                // }
+                
+                // $('#player-2').prepend(h1);
             }
             // Disconnect player from firebase when closing so others may join
             if (currentPlayer === 1) {
@@ -74,15 +99,6 @@ const resetName2 = database.ref('players/player2/playerName');
                 firebase2.onDisconnect().set(false);
                 resetName2.onDisconnect().set(''); 
             }
-
-            //chat logic temp
-            // database.ref('chat').on('value', function(snap) {
-            //     console.log(snap.val());
-            //     database.ref().child('chat').update({
-            //         message: 'hi',
-            //         name: playerName
-            //     })
-            //  })
         })    
     })
 
@@ -138,16 +154,79 @@ playersSnap.on('child_changed', function(snap) {
     }
     else if (!snap.val().active) {
         console.log(snap.val().active);
-        li = $('<li>').text(snap.val().playerName + " (user has disconnected)");
+        li = $('<li>').text(snap.val().playerName + " (A user has disconnected)");
         $('#chat-container').append(li);
+        $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+
     }
     else if (!snap.val().active) {
-        li = $('<li>').text(snap.val().playerName + " (user has disconnected)");
+        li = $('<li>').text(snap.val().playerName + " (A user has disconnected)");
         $('#chat-container').append(li);
+        $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+
     }
     else {
         return;
     }
 })
 
+// GAME LOGIC HERE
+database.ref().on('value', function(snap) {
+    if (currentPlayer === 1) {
+        h1 = $("<h1>").text("Player 2 : " + snap.val().players.player2.playerName);
+        $('#player-2').html(h1);
+    }
+})
 
+$('#info').on('click','button',function(){
+
+    database.ref().once('value', function(snap) {
+        if (!snap.val().players.player1.active && !snap.val().players.player2.active){
+            return;
+        }
+        // else if ($('#player-1').contains('Player')) {
+        //     return;
+        // }
+        else if (snap.val().players.player1.active && !snap.val().players.player2.active) {
+            h1 = $("<h1>").text("Player 2 : " + snap.val().players.player2.playerName);
+            $('#player-2').prepend(h1);
+        }
+        else if (snap.val().players.player1.active) {
+            h1 = $("<h1>").text("Player 1 : " + snap.val().players.player1.playerName);
+            $('#player-1').prepend(h1);
+        }
+    })
+
+    database.ref().once('value', function(snap) {
+        name1 = snap.val().players.player1.playerName;
+        choice1 = snap.val().players.player1.choice;
+        wins1 = snap.val().players.player1.wins;
+        losses1 = snap.val().players.player1.losses;
+        console.log(name1 + choice1 + wins1+losses1);
+
+        if (snap.val().players.player1.active && snap.val().players.player2.active) {
+            h1 = $('<h1>').text("Player 2: " + playerName);
+            choices = ['Rock','Paper','Scissors'];
+    
+            for (i =0; i < choices.length; i++) {
+                button = $('<button>');
+                button.text(choices[i]);
+                $('#player-2').append(button);
+            }
+            $('#player-2').prepend(h1);
+        }
+        else {
+            h1 = $('<h1>').text("Player 1: " + playerName);
+            choices = ['Rock','Paper','Scissors'];
+
+            for (i =0; i < choices.length; i++) {
+                button = $('<button>');
+                button.text(choices[i]);
+                $('#player-1').append(button);
+            }
+                
+                $('#player-1').prepend(h1);
+        }
+    })
+
+})
