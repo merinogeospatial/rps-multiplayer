@@ -6,7 +6,8 @@
 } */
 
 body {
-    background-color:lightyellow;
+    background-color:bisque;
+    font-family: 'Cabin Condensed', sans-serif;
 }
 
 ul {
@@ -53,6 +54,8 @@ ul {
     border-radius: 15pt;
     background-color: rgba(0, 0, 0, 0.705); 
     color: gold;
+    font-family: 'Alfa Slab One', cursive;
+
 }
 
 .form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
