@@ -250,7 +250,7 @@ playersSnap.on('value', function(snap) {
     let playerChoice2 = snap.val().player2.choice;
 
 
-    if (playerChoice2 === '' || playerChoice2 === ''){
+    if (playerChoice2 === '' || playerChoice1 === ''){
         return;
     }
     else if ( (playerChoice1 === 'Rock' && playerChoice2=== 'Paper') || (playerChoice1 === 'Paper' && playerChoice2=== 'Scissors') || 
