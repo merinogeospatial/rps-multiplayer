@@ -1,5 +1,5 @@
 .row {
-    border: red solid 1pt;
+    border: slategray solid 1pt;
 }
 
 ul {
@@ -10,9 +10,14 @@ ul {
 }
 
 #info {
-    height: 50px;
+    height: 40px;
 }
 
 #stage {
     height: 250px;
 }
+
+.jumbotron {
+    border: royalblue solid 1pt;
+}
+
