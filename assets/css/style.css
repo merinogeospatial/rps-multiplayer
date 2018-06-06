@@ -7,7 +7,8 @@ ul {
     padding: 5px;
     height: 200px;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.062); 
+    background-color: rgba(0, 0, 0, 0.705); 
+    color: white;
 }
 
 #info {
@@ -20,5 +21,7 @@ ul {
 
 .jumbotron {
     border: royalblue solid 1pt;
+    background-color: rgba(0, 0, 0, 0.705); 
+    color: white;
 }
 
