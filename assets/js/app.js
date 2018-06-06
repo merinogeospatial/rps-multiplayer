@@ -286,16 +286,81 @@ playersSnap.on('value', function(snap) {
                 losses: losses1
             });
         })
-
+        $('#arena').html("<h1>Player 2 Wins!</h1><h3>Waiting on player to make next choice...</h3>");
         resetChoice = true;
         setTimeout( function(){
-            li = $('<li>').text("Player 2 wins!");
+            li = $('<li>').text("Player 2 won this match!");
+            $('#chat-container').append(li);
+            $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+        },500)
+    }
+    else if ( (playerChoice2 === 'Rock' && playerChoice1 === 'Paper') || (playerChoice2 === 'Paper' && playerChoice1 === 'Scissors') || 
+    (playerChoice2 === 'Scissors' && playerChoice1 === 'Rock') ) {
+        console.log("Player 1 wins");
+        // change local variables
+        wins1++;
+        losses2++;
+        // clear choices and reset buttons
+        $('.btn-primary').removeAttr('disabled');
+        // winner = snap.val().player2.playerName;
+        // clear choice for player 2
+        database.ref('players').once('value', function(snap){
+            choice2.update({
+                choice: ""
+            });
+        })
+        // clear choice for player 1
+        database.ref('players').once('value', function(snap){
+            choice1.update({
+                choice: ""
+            });
+        })
+        // update wins for player 1
+        database.ref('players').once('value', function(snap){
+            choice1.update({
+                wins: wins1
+            });
+        })
+        // update losses for player 2
+        database.ref('players').once('value', function(snap){
+            choice2.update({
+                losses: losses2
+            });
+        })
+        $('#arena').html("<h1>Player 1 Wins!</h1><h3>Waiting on player to make next choice...</h3>");
+        resetChoice = true;
+        setTimeout( function(){
+            li = $('<li>').text("Player 1 won this match!");
             $('#chat-container').append(li);
             $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
         },500)
     }
     else {
-        console.log(playerChoice1);
+        console.log("It's a tie!");
+       
+        // clear choices and reset buttons
+        $('.btn-primary').removeAttr('disabled');
+        // clear choice for player 2
+        database.ref('players').once('value', function(snap){
+            choice2.update({
+                choice: ""
+            });
+        })
+        // clear choice for player 1
+        database.ref('players').once('value', function(snap){
+            choice1.update({
+                choice: ""
+            });
+        })
+
+        $('#arena').html("<h1>It's a tie!</h1><h3>Waiting on player to make next choice...</h3>");
+        resetChoice = true;
+        setTimeout( function(){
+            li = $('<li>').text("It's a tie!");
+            $('#chat-container').append(li);
+            $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
+        },500)
+    
 
     }
 })
