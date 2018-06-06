@@ -1,5 +1,12 @@
-.row {
+* {
+    border-radius: 15pt;
+}
+/* .row {
     border: slategray solid 1pt;
+} */
+
+body {
+    background-color:lightyellow;
 }
 
 ul {
@@ -7,21 +14,56 @@ ul {
     padding: 5px;
     height: 200px;
     overflow: auto;
-    background-color: rgba(0, 0, 0, 0.705); 
+    background-color: rgba(255, 255, 255, 0.226); 
     color: white;
+    border: aliceblue solid 1pt;
+
 }
 
 #info {
     height: 40px;
+    color: gold;
+    background-color: rgba(0, 0, 0, 0.705); 
+    border: aliceblue solid 1pt;
+
 }
 
 #stage {
     height: 250px;
+    background-color: rgba(0, 0, 0, 0.705); 
+    color: aliceblue;
+    border: aliceblue solid 1pt;
+
+}
+
+#chat {
+    background-color: rgba(0, 0, 0, 0.705); 
+    color: aliceblue;
+    border: aliceblue solid 1pt;
+}
+
+#player-1,
+#player-2,
+#arena {
+    /* background-color: rgba(60, 73, 73, 0.705);  */
 }
 
 .jumbotron {
-    border: royalblue solid 1pt;
+    border: aliceblue solid 1pt;
+    border-radius: 15pt;
     background-color: rgba(0, 0, 0, 0.705); 
-    color: white;
+    color: gold;
 }
 
+.form-control::placeholder { /* Chrome, Firefox, Opera, Safari 10.1+ */
+    color: green;
+    opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+    color: green;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+    color: green;
+}
