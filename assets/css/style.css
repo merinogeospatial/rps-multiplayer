@@ -70,3 +70,7 @@ ul {
 ::-ms-input-placeholder { /* Microsoft Edge */
     color: green;
 }
+
+h1 {
+    text-align: center;
+}

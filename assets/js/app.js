@@ -20,6 +20,10 @@ const firebase1 = database.ref('players/player1/active');
 const firebase2 = database.ref('players/player2/active');
 const resetName1 = database.ref('players/player1/playerName');
 const resetName2 = database.ref('players/player2/playerName');
+const resetWins1 = database.ref('players/player1/wins');
+const resetWins2 = database.ref('players/player2/wins');
+const resetLosses1 = database.ref('players/player1/losses');
+const resetLosses2 = database.ref('players/player2/losses');
 const choice1 = database.ref('players/player1');
 const choice2 = database.ref('players/player2');
 let winner;
@@ -42,7 +46,8 @@ let losses2 = 0;
 
             if (snap.val().player1.active && snap.val().player2.active) {
                 alert("There are already two players fighting it out!");
-                $('#info').text("Hello, " + thisPlayer + "! Unable to join game, there are already 2 players.")
+                $('#info').text("Hello, " + thisPlayer + "! Unable to join game, there are already 2 players.");
+                $('#stage').html('<div class="col-12"><h1>Cannot join the game, but you can chat below!</h1></div>');
             }
             else if (!snap.val().player1.active) {
                 playersSnap.update({
@@ -79,11 +84,17 @@ let losses2 = 0;
             if (currentPlayer === 1) {
                 firebase1.onDisconnect().set(false);
                 resetName1.onDisconnect().set(''); 
-
+                resetLosses1.onDisconnect().set(0);
+                resetWins1.onDisconnect().set(0);
             }
-            else {
+            else if( currentPlayer === 2) {
                 firebase2.onDisconnect().set(false);
                 resetName2.onDisconnect().set(''); 
+                resetLosses2.onDisconnect().set(0);
+                resetWins2.onDisconnect().set(0);
+            }
+            else {
+                return;
             }
         })    
     })
@@ -286,13 +297,20 @@ playersSnap.on('value', function(snap) {
                 losses: losses1
             });
         })
-        $('#arena').html("<h1>Player 2 Wins!</h1><h3>Waiting on player to make next choice...</h3>");
+        $('#arena').html("<h1>Player 2 Wins!</h1><h3>Make your move or wait for the other player.</h3>");
         resetChoice = true;
+        database.ref().once('value', function(snap) {
+            winDisplay2 = snap.val().players.player2.wins;
+            loseDisplay2 = snap.val().players.player2.losses;
+            winDisplay1 = snap.val().players.player1.wins;
+            loseDisplay1 = snap.val().players.player1.losses;
+            
         setTimeout( function(){
-            li = $('<li>').text("Player 2 won this match!");
+            li = $('<li>').text("Player 2 won this match! " + "Player 1 wins/losses: (" + winDisplay1 +"/" + loseDisplay1 + "). Player 2 wins/losses: (" + winDisplay2 + "/" + loseDisplay2 + ").");
             $('#chat-container').append(li);
             $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
         },500)
+        })
     }
     else if ( (playerChoice2 === 'Rock' && playerChoice1 === 'Paper') || (playerChoice2 === 'Paper' && playerChoice1 === 'Scissors') || 
     (playerChoice2 === 'Scissors' && playerChoice1 === 'Rock') ) {
@@ -327,13 +345,20 @@ playersSnap.on('value', function(snap) {
                 losses: losses2
             });
         })
-        $('#arena').html("<h1>Player 1 Wins!</h1><h3>Waiting on player to make next choice...</h3>");
+        $('#arena').html("<h1>Player 1 Wins!</h1><h3>Make your move or wait for other player.</h3>");
         resetChoice = true;
+        database.ref().once('value', function(snap) {
+            winDisplay2 = snap.val().players.player2.wins;
+            loseDisplay2 = snap.val().players.player2.losses;
+            winDisplay1 = snap.val().players.player1.wins;
+            loseDisplay1 = snap.val().players.player1.losses;
+            
         setTimeout( function(){
-            li = $('<li>').text("Player 1 won this match!");
+            li = $('<li>').text("Player 1 won this match! " + "Player 1 wins/losses: (" + winDisplay1 +"/" + loseDisplay1 + "). Player 2 wins/losses: (" + winDisplay2 + "/" + loseDisplay2 + ").");
             $('#chat-container').append(li);
             $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
         },500)
+        })
     }
     else {
         console.log("It's a tie!");
@@ -353,7 +378,7 @@ playersSnap.on('value', function(snap) {
             });
         })
 
-        $('#arena').html("<h1>It's a tie!</h1><h3>Waiting on player to make next choice...</h3>");
+        $('#arena').html("<h1>It's a tie!</h1><h3>Make your move!</h3>");
         resetChoice = true;
         setTimeout( function(){
             li = $('<li>').text("It's a tie!");
