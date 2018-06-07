@@ -231,7 +231,6 @@ $('#info').on('click','button',function(){
                 $('#player-1').prepend(h1);
         }
     })
-
 })
 
 $('#player-1').on('click', 'button', function(){
@@ -259,7 +258,6 @@ $('#player-2').on('click', 'button', function(){
 playersSnap.on('value', function(snap) {
     let playerChoice1 = snap.val().player1.choice;
     let playerChoice2 = snap.val().player2.choice;
-
 
     if (playerChoice2 === '' || playerChoice1 === ''){
         return;
@@ -313,7 +311,7 @@ playersSnap.on('value', function(snap) {
         })
     }
     else if ( (playerChoice2 === 'Rock' && playerChoice1 === 'Paper') || (playerChoice2 === 'Paper' && playerChoice1 === 'Scissors') || 
-    (playerChoice2 === 'Scissors' && playerChoice1 === 'Rock') ) {
+              (playerChoice2 === 'Scissors' && playerChoice1 === 'Rock') ) {
         console.log("Player 1 wins");
         // change local variables
         wins1++;
@@ -385,8 +383,6 @@ playersSnap.on('value', function(snap) {
             $('#chat-container').append(li);
             $('#chat-container').scrollTop($('#chat-container').prop("scrollHeight"));
         },500)
-    
-
     }
 })
 
